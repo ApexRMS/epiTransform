@@ -15,10 +15,13 @@ transformerName <- "Remove Seasonal Effects"
 settings <- datasheet(myScenario, name = "epiTransform_STLInputs", lookupsAsFactors = F)
 data_in <- datasheet(myScenario, name = "epi_DataSummary", lookupsAsFactors = F)
 
+if(nrow(data_in) == 0)
+  stop("No input data found, please check scenario dependencies!")
+
 # Parse settings
 s.window <- settings$SWindow[1]
 t.window <- settings$TWindow[1]
-transformVariable <- str_c(settings$Variable[1], " - Daily")
+transformVariable <- str_replace(settings$Variable[1], "Cumulative", "Daily")
 logOffset <- settings$LogOffset[1]
 
 # internal, names for new variables
@@ -57,8 +60,6 @@ data_out <- data_in %>%
   # Temporarily just keep the trend
   filter(TransformerID == new_variables[1]) %>%
   mutate(TransformerID = transformerName) %>%
-  # Add untransformed variables back in
-  #bind_rows(data_in %>% filter(!str_detect(Variable, settings$Variable[1]))) %>%
   as.data.frame
 
 # Save output ------
