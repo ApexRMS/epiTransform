@@ -9,7 +9,7 @@ library(stringr)
 
 # Setup ----------
 myScenario <- scenario()
-transformerName <- "Remove Seasonal Effects"
+transformerName <- "Data Transformations: Remove Seasonal Effects"
 
 # Load data from SyncroSim
 settings <- datasheet(myScenario, name = "epiTransform_STLInputs", lookupsAsFactors = F)
@@ -23,6 +23,10 @@ s.window <- settings$SWindow[1]
 t.window <- settings$TWindow[1]
 transformVariable <- str_replace(settings$Variable[1], "Cumulative", "Daily")
 logOffset <- settings$LogOffset[1]
+
+# If no variable to transform is provided, use the first variable in the data
+if(length(transformVariable) == 0)
+  transformVariable <- data_in$Variable[1] %>% str_replace("Cumulative", "Daily")
 
 # internal, names for new variables
 new_variables <- c("Trend (STL)", "Adjusted (STL)")
@@ -59,7 +63,8 @@ data_out <- data_in %>%
   arrange(Timestep,Variable) %>%
   # Temporarily just keep the trend
   filter(TransformerID == new_variables[1]) %>%
-  mutate(TransformerID = transformerName) %>%
+  mutate(
+    TransformerID = transformerName) %>%
   as.data.frame
 
 # Save output ------

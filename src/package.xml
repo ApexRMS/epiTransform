@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<package name="epiTransform" displayName="Add-On to the epi package which provides a variety of data transformations" isAddOn="True" extendsPackage="epi" version="1.0.0">
+<package name="epiTransform" displayName="Data Transformations" isAddOn="True" extendsPackage="epi" version="1.0.0">
   <transformers>
     <transformer
       name="STLDecomposition"
       isPrimary="True"
-      displayName="Remove Seasonal Effects"
+      displayName="Data Transformations: Remove Seasonal Effects"
       programName="Rscript"
       programArguments="seasonal.R"
       runContext="LocalOnly"
       isRunnable ="True">
       <datafeeds>
-        <datafeed name="STLInputs" displayName="Inputs" dataScope="Scenario">
+        <datafeed name="STLInputs" displayName="Run Settings" dataScope="Scenario">
           <datasheets>
-            <datasheet name="STLInputs" displayName="Inputs" isSingleRow="True">
+            <datasheet name="STLInputs" displayName="Run Settings" isSingleRow="True">
               <columns>
                 <column name="STLInputsID" dataType="Integer" isPrimary="True"/>
                 <column name="ScenarioID" dataType="Integer" displayName="Scenario"/>
@@ -29,21 +29,33 @@
         </datafeed>
       </datafeeds>
       <pipeline>
-        <datafeed name="STLInputs" type="Input"/>
-        <datafeed name="epi_DataSummary" type="Output"/>
+        <datafeed name="STLInputs"/>
+        <datafeed name="epi_DataSummary"/>
       </pipeline>
     </transformer>
   </transformers>
   <layouts>
-    <layout name="coreforms_ScenarioDatafeeds" appendTo="epi_Transformations">
-      <group name="STL" displayName="Remove Seasonal Effects">
-        <item name="STLInputs" itemTransformer="STLDecomposition" showIf="isEither"/>
+    <layout name="coreforms_ScenarioDatafeeds">
+      <group name="STL" displayName="Remove Seasonal Effects" appendTo="epi_Transformations">
+        <group name="STLInputGroup" displayName="Inputs">
+          <item name="STLInputs" itemTransformer="STLDecomposition" showIf="isEither"/>
+          <item
+            name="epi_DataSummary"
+            displayName="Data to Transform"
+            showIf="isEither"
+            transformerFilter="!STLDecomposition"
+            viewClassName="SyncroSim.Core.Forms.MultiRowDataFeedView"
+            viewClassAssembly="SyncroSim.Core.Forms"
+            filterTransformer="!STLDecomposition"
+            itemTransformer="STLDecomposition" />
+        </group>
         <item
           name="epi_DataSummary"
-          displayName="Data"
-          showIf="isEither"
+          displayName="Results"
+          showIf="isResult"
           viewClassName="SyncroSim.Core.Forms.MultiRowDataFeedView"
           viewClassAssembly="SyncroSim.Core.Forms"
+          filterTransformer="STLDecomposition"
           itemTransformer="STLDecomposition"/>
       </group>
     </layout>
