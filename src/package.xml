@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package name="epiTransform" displayName="Add-On to the epi package which provides a variety of data transformations" isAddOn="True" extendsPackage="epi" version="1.0.0">
+  <transformers>
+    <transformer
+      name="STLDecomposition"
+      isPrimary="True"
+      displayName="Remove Seasonal Effects"
+      programName="Rscript"
+      programArguments="seasonal.R"
+      runContext="LocalOnly"
+      isRunnable ="True">
+      <datafeeds>
+        <datafeed name="STLInputs" displayName="Inputs" dataScope="Scenario">
+          <datasheets>
+            <datasheet name="STLInputs" displayName="Inputs" isSingleRow="True">
+              <columns>
+                <column name="STLInputsID" dataType="Integer" isPrimary="True"/>
+                <column name="ScenarioID" dataType="Integer" displayName="Scenario"/>
+                <column name="Variable" dataType="Integer" displayName="Variable to Transform" validationType="List" formula1="0:Cases|1:Deaths" defaultValue="0"/>
+                <column name="SWindow" dataType="Integer" displayName="Seasonal Window" defaultValue="21"/>
+                <column name="TWindow" dataType="Integer" displayName="Trend Window" defaultValue="14"/>
+                <column name="LogOffset" dataType="Double" displayName="Log Offset" defaultValue="5"/>
+              </columns>
+            </datasheet>
+          </datasheets>
+        </datafeed>
+      </datafeeds>
+      <pipeline>
+        <datafeed name="STLInputs" type="Input"/>
+        <datafeed name="epi_DataSummary" type="Output"/>
+      </pipeline>
+    </transformer>
+  </transformers>
+  <layouts>
+    <layout name="coreforms_ScenarioDatafeeds" appendTo="epi_DataTransformations">
+      <group name="STL" displayName="Remove Seasonal Effects">
+        <item name="STLInputs" itemTransformer="STLDecomposition" showIf="isEither"/>
+        <item
+          name="epi_DataSummary"
+          displayName="Transformed Data"
+          showIf="isResult"
+          viewClassName="SyncroSim.Core.Forms.MultiRowDataFeedView"
+          viewClassAssembly="SyncroSim.Core.Forms"
+          filterTransformer="STLDecomposition"
+          itemTransformer="STLDecomposition"/>
+      </group>
+    </layout>
+  </layouts>
+</package>
