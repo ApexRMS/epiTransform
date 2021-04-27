@@ -68,4 +68,4 @@ data_out <- data_in %>%
   as.data.frame
 
 # Save output ------
-saveDatasheet(myScenario, data_out, name = "epi_DataSummary")
+saveDatasheet(myScenario, data_out, name = "epi_DataSummary", append = T)
