@@ -40,6 +40,7 @@ new_variables <- c("Trend (STL)", "Adjusted (STL)")
 # Function Definitions ------
 add_stl_trend_m <- function(c,s.window=21,t.window=14){
   cc <- c %>%
+    pmax(1) %>% # Don't allow numbers below 1
     log() %>%
     ts(frequency = 7,start = as.numeric(format(Sys.Date(), "%j"))) %>% 
     stl(s.window=s.window,t.window=t.window) 
