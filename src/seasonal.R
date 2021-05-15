@@ -12,8 +12,9 @@ myScenario <- scenario()
 transformerName <- "Data Transformations: Remove Seasonal Effects"
 
 # Load data from SyncroSim
-settings <- datasheet(myScenario, name = "epiTransform_STLInputs", lookupsAsFactors = F)
-data_in <- datasheet(myScenario, name = "epi_DataSummary", lookupsAsFactors = F)
+settings <- datasheet(myScenario, name = "epiTransform_STLInputs", lookupsAsFactors = F, optional = T)
+data_in <- datasheet(myScenario, name = "epi_DataSummary", lookupsAsFactors = F, optional = T) %>%
+  mutate(TransformerID = replace_na(TransformerID, "Placeholder Transformer"))
 
 if(nrow(data_in) == 0)
   stop("No input data found, please check scenario dependencies!")
@@ -23,10 +24,15 @@ s.window <- settings$SWindow[1]
 t.window <- settings$TWindow[1]
 transformVariable <- str_replace(settings$Variable[1], "Cumulative", "Daily")
 logOffset <- settings$LogOffset[1]
+dataSource <- ifelse(is.na(settings$Source), "Placeholder Transformer", settings$Source)
 
 # If no variable to transform is provided, use the first variable in the data
-if(length(transformVariable) == 0)
-  transformVariable <- data_in$Variable[1] %>% str_replace("Cumulative", "Daily")
+if(is.na(transformVariable))
+  transformVariable <- data_in %>%
+    filter(TransformerID %in% dataSource) %>%
+    pull(Variable) %>%
+    head(1) %>%
+    str_replace("Cumulative", "Daily")
 
 # internal, names for new variables
 new_variables <- c("Trend (STL)", "Adjusted (STL)")
@@ -44,7 +50,9 @@ add_stl_trend_m <- function(c,s.window=21,t.window=14){
 
 # Transform Data -----------
 data_out <- data_in %>%
-  filter(Variable %in% transformVariable) %>%
+  filter(
+    Variable %in% transformVariable,
+    TransformerID %in% dataSource) %>%
   group_by(Variable,Jurisdiction) %>%
   mutate(stl=add_stl_trend_m(.data$Value+logOffset,s.window=s.window,t.window=t.window)) %>%
   ungroup() %>%
