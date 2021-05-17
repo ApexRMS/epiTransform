@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<package name="epiTransform" displayName="Data Transformations" isAddOn="True" extendsPackage="epi" version="1.0.0">
+<package name="epiTransform" displayName="Remove Seasonal Effects" isAddOn="True" extendsPackage="epi" version="1.0.0">
   <transformers>
     <transformer
       name="STLDecomposition"
