@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package name="epiTransform" displayName="Remove Seasonal Effects" isAddOn="True" extendsPackage="epi" version="1.0.0">
   <transformers>
-    <transformer
-      name="STLDecomposition"
-      isPrimary="True"
-      displayName="Data Transformations: Remove Seasonal Effects"
-      programName="Rscript"
-      programArguments="seasonal.R"
-      runContext="LocalOnly"
-      isRunnable ="True">
-      <datafeeds>
+	<transformer name="Primary" isPrimary="True">
+      <include>
+        <transformer name="STLDecomposition"/>
+        <transformer name="Merge"/>
+      </include>
+	  <datafeeds>
         <datafeed name="STLInputs" displayName="Run Settings" dataScope="Scenario">
           <datasheets>
             <datasheet name="STLInputs" displayName="Run Settings" isSingleRow="True">
@@ -29,11 +26,30 @@
           </datasheets>
         </datafeed>
       </datafeeds>
+    </transformer>
+    <transformer
+      name="STLDecomposition"
+      displayName="Data Transformations: Remove Seasonal Effects"
+      programName="Rscript"
+      programArguments="seasonal.R"
+      runContext="LocalOnly"
+      isRunnable ="True">
       <pipeline>
         <datafeed name="STLInputs"/>
         <datafeed name="epi_DataSummary"/>
       </pipeline>
     </transformer>
+	<transformer
+      name="Merge"
+      displayName="Data Transformations: Merge Scenarios"
+      programName="Rscript"
+      programArguments="merge.R"
+      runContext="LocalOnly"
+      isRunnable ="True">
+	    <pipeline>
+		    <datafeed name="epi_DataSummary"/>
+	    </pipeline>
+	</transformer>
   </transformers>
   <layouts>
     <layout name="coreforms_ScenarioDatafeeds">
@@ -59,6 +75,24 @@
           filterTransformer="STLDecomposition"
           itemTransformer="STLDecomposition"/>
       </group>
+	  <group name="Merge" displayName="Merge Scenarios" appendTo="epi_Transformations">
+		<group name="MergeInputGroup" displayName="Inputs">
+		  <item
+		    name="epi_DataSummary"
+			displayName="Data to Transform"
+			showIf="isEither"
+			viewClassName="SyncroSim.Core.Forms.MultiRowDataFeedView"
+			viewClassAssembly="SyncroSim.Core.Forms"
+			itemTransformer="Merge" />
+		</group>
+	      <item
+			name="epi_DataSummary"
+		    displayName="Results"
+	    	showIf="isResult"
+			viewClassName="SyncroSim.Core.Forms.MultiRowDataFeedView"
+			viewClassAssembly="SyncroSim.Core.Forms"
+			itemTransformer="Merge"/>
+	    </group>
     </layout>
   </layouts>
 </package>
