@@ -1,6 +1,5 @@
 library(rsyncrosim)
 library(dplyr)
-library(stringr)
 
 # Read in run settings
 settings <- datasheet(scenario(), "epiTransform_MergeInputs")
@@ -11,12 +10,12 @@ transformerName <- "Data Transformations: Merge Scenarios"
 originalData <- datasheet(scenario(), "epi_DataSummary", optional = T, lookupsAsFactors = F)
 
 # Choose if or how to modify the source transformer data
-if(str_detect(settings$Keep, "Keep both")){
+if(settings$Keep == "Both"){
   saveDatasheet(scenario(), bind_rows(originalData, originalData %>% mutate(TransformerID = transformerName)), "epi_DataSummary")
   
-} else if(str_detect(settings$Keep, "Only keep original")){
+} else if(settings$Keep == "Source"){
   saveDatasheet(scenario(), originalData, "epi_DataSummary")
   
-} else # Only keep consolidated
+} else # settings$Keep == "Merged"
   saveDatasheet(scenario(), originalData %>% mutate(TransformerID = transformerName), "epi_DataSummary")
 

@@ -31,10 +31,10 @@
 					  <columns>
 						  <column name="MergeInputsID" dataType="Integer" isPrimary="True"/>
 						  <column name="ScenarioID" dataType="Integer" displayName="Scenario"/>
-						  <column name="Keep" displayName="Source transformer behaviour" dataType="Integer" validationType="List" formula1="1:Keep both originial and consolidated source transformer data|2:Only keep original source transformer data|3:Only keep consolidated source transformer data"/>
+						  <column name="Keep" displayName="Output stages:" dataType="Integer" validationType="List" formula1="1:Source|2:Merged|3:Both"/>
 					      </columns>
 					  <defaultRecords>
-						  <record columns="Keep" values="1"/>
+						  <record columns="Keep" values="3"/>
 					  </defaultRecords>
 				  </datasheet>
 			  </datasheets>
