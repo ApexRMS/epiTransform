@@ -25,6 +25,20 @@
             </datasheet>
           </datasheets>
         </datafeed>
+		  <datafeed name="MergeInputs" displayName="Run Settings" dataScope="Scenario">
+			  <datasheets>
+				  <datasheet name="MergeInputs" displayName="Run Settings" isSingleRow="True">
+					  <columns>
+						  <column name="MergeInputsID" dataType="Integer" isPrimary="True"/>
+						  <column name="ScenarioID" dataType="Integer" displayName="Scenario"/>
+						  <column name="Keep" displayName="Source transformer behaviour" dataType="Integer" validationType="List" formula1="1:Keep both originial and consolidated source transformer data|2:Only keep original source transformer data|3:Only keep consolidated source transformer data"/>
+					      </columns>
+					  <defaultRecords>
+						  <record columns="Keep" values="1"/>
+					  </defaultRecords>
+				  </datasheet>
+			  </datasheets>
+		  </datafeed>
       </datafeeds>
     </transformer>
     <transformer
@@ -47,6 +61,7 @@
       runContext="LocalOnly"
       isRunnable ="True">
 	    <pipeline>
+			<datafeed name="MergeInputs"/>
 		    <datafeed name="epi_DataSummary"/>
 	    </pipeline>
 	</transformer>
@@ -77,7 +92,8 @@
       </group>
 	  <group name="Merge" displayName="Merge Scenarios" appendTo="epi_Transformations">
 		<group name="MergeInputGroup" displayName="Inputs">
-		  <item
+			<item name="MergeInputs" itemTransformer="Merge" showIf="isEither"/>
+			<item
 		    name="epi_DataSummary"
 			displayName="Data to Transform"
 			showIf="isEither"
