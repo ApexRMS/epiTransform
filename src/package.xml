@@ -18,6 +18,8 @@
                 <column name="SWindow" dataType="Integer" displayName="Seasonal window" defaultValue="21"/>
                 <column name="TWindow" dataType="Integer" displayName="Trend window" defaultValue="14"/>
                 <column name="LogOffset" dataType="Integer" displayName="Log offset" defaultValue="5"/>
+			    <column name="MinimumTimestep" dataType="Date" displayName="Start date"/>
+			    <column name="MaximumTimestep" dataType="Date" displayName="End date"/>
               </columns>
               <defaultRecords>
                 <record columns="SWindow|TWindow|LogOffset" values="21|14|5"/>

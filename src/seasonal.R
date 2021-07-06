@@ -14,7 +14,9 @@ transformerName <- "Data Transformations: Remove Seasonal Effects"
 # Load data from SyncroSim
 settings <- datasheet(myScenario, name = "epiTransform_STLInputs", lookupsAsFactors = F, optional = T)
 data_in <- datasheet(myScenario, name = "epi_DataSummary", lookupsAsFactors = F, optional = T) %>%
-  mutate(TransformerID = replace_na(TransformerID, "Placeholder Transformer"))
+  mutate(TransformerID = replace_na(TransformerID, "Placeholder Transformer")) %>%
+  filter(if(!is.na(settings$MinimumTimestep)) Timestep >= settings$MinimumTimestep else TRUE) %>%
+  filter(if(!is.na(settings$MaximumTimestep)) Timestep <= settings$MaximumTimestep else TRUE)
 
 if(nrow(data_in) == 0)
   stop("No input data found, please check scenario dependencies!")
